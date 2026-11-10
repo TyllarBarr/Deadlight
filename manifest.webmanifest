@@ -1,1 +1,10 @@
-{"name":"DEADLIGHT Survival","short_name":"DEADLIGHT","start_url":"./index.html","display":"standalone","background_color":"#101713","theme_color":"#101713","description":"A local-first zombie survival RPG prototype"}
+{
+  "name": "DEADLIGHT \u2014 Survival",
+  "short_name": "DEADLIGHT",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c120e",
+  "theme_color": "#101713",
+  "description": "A local-first zombie survival RPG set in Aberdeen."
+}
