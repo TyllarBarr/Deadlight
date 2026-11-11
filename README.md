@@ -28,3 +28,9 @@ Additional 3.8 coverage in the final pass includes more slang and regional phras
 
 
 3.8 fix: beverage actions now require the exact named drink to exist in inventory. No drink is created, no substitute is consumed, and thirst is unchanged when the requested drink is absent.
+
+
+DEADLIGHT Core 4.0: prioritises literal object-targeted strikes before synonym expansion, preventing attacks on non-living objects from entering the infected combat handler.
+
+
+Core 4.0 adds improvised environmental interactions: moving and tipping props, climbing onto elevated objects, breaking and crossing windows, and state-checked physical actions.

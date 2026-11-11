@@ -55,7 +55,7 @@ button.danger{background:#472b35;border-color:#8e5165;color:#ffe7eb}
 </style>
 </head>
 <body><main class="app">
-<header class="top"><div class="brand">DEADLIGHT <span class="pill">CORE 3.8</span></div><div class="day" id="clock">DAY 1 · 07:00</div></header>
+<header class="top"><div class="brand">DEADLIGHT <span class="pill">CORE 4.0</span></div><div class="day" id="clock">DAY 1 · 07:00</div></header>
 <section class="hero"><div class="scene"><div class="eyebrow" id="weather">OVERCAST · LIGHT RAIN</div><h1 id="placeTitle">Spring Gardens</h1><p id="placeDesc"></p></div><div class="stats" id="stats"></div></section>
 <nav class="tabs"><button class="active" data-tab="play">Explore</button><button data-tab="inventory">Inventory</button><button data-tab="map">Map</button><button data-tab="journal">Journal</button><button data-tab="people">People</button><button data-tab="settings">Settings</button></nav>
 <section id="tab-play"><div class="grid"><div class="panel"><h2>Situation & events</h2><div class="story" id="story" aria-live="polite"></div></div><div class="panel"><h2>Quick actions</h2><div class="actions">
@@ -66,8 +66,8 @@ button.danger{background:#472b35;border-color:#8e5165;color:#ffe7eb}
 <section id="tab-map" class="hidden"><div class="panel"><h2>Known surroundings · Aberdeen</h2><div id="map" class="map"></div><p class="notice">Travel costs time and energy. Routes may be blocked, exposed or dangerous. Visited places retain their loot state.</p></div><div class="panel"><h2>Local conditions</h2><div id="conditions"></div></div></section>
 <section id="tab-journal" class="hidden"><div class="panel"><h2>Survivor journal</h2><div id="journal"></div></div><div class="panel"><h2>Save management</h2><button onclick="exportSave()">Export save backup</button> <button onclick="document.getElementById('loadFile').click()">Import save</button> <input id="loadFile" type="file" accept="application/json" class="hidden"><button onclick="save();toast('Progress saved on this device.')">Save now</button><button class="danger" onclick="resetGame()">Start a new game</button><p class="notice">Autosaves after actions. Export a backup before clearing browser data or changing devices.</p></div></section>
 <section id="tab-people" class="hidden"><div class="panel"><h2>Known survivors</h2><div id="people"></div></div><div class="panel"><h2>Active leads</h2><div id="leads"></div></div></section>
-<section id="tab-settings" class="hidden"><div class="panel"><h2>Simulation settings</h2><p class="notice">Difficulty: Realistic and unforgiving · Setting: Aberdeen, Scotland · Single-player · Local save · Procedural narrative director</p><div class="line"><span>Autosave</span><b class="good">ON</b></div><div class="line"><span>Offline play</span><b class="good">SUPPORTED</b></div><div class="line"><span>Live AI connection</span><b>Not connected</b></div><p class="notice">This is a self-contained procedural game, not a live ChatGPT connection. It does not need an API key, paid AI calls or a server. It generates varied scenarios from local world state and authored narrative material.</p><button onclick="toggleHints()">Toggle command hints</button><button onclick="toast('DEADLIGHT Core 3.8 · Local-first survival RPG · Save stored in this browser.')">About this build</button></div><div class="panel"><h2>Command examples</h2><div class="notice">“Search the kitchen cupboards”, “quietly open the stairwell door”, “drag the wardrobe against the front door”, “ask Eilidh if she has seen anyone”, “use a bandage on my arm”, “travel to the pharmacy”, “sleep for four hours”.</div></div></section>
-<div class="foot">DEADLIGHT · CORE 3.8 · Local-first survival simulation · No subscription or API key required</div></main>
+<section id="tab-settings" class="hidden"><div class="panel"><h2>Simulation settings</h2><p class="notice">Difficulty: Realistic and unforgiving · Setting: Aberdeen, Scotland · Single-player · Local save · Procedural narrative director</p><div class="line"><span>Autosave</span><b class="good">ON</b></div><div class="line"><span>Offline play</span><b class="good">SUPPORTED</b></div><div class="line"><span>Live AI connection</span><b>Not connected</b></div><p class="notice">This is a self-contained procedural game, not a live ChatGPT connection. It does not need an API key, paid AI calls or a server. It generates varied scenarios from local world state and authored narrative material.</p><button onclick="toggleHints()">Toggle command hints</button><button onclick="toast('DEADLIGHT Core 4.0 · Local-first survival RPG · Save stored in this browser.')">About this build</button></div><div class="panel"><h2>Command examples</h2><div class="notice">“Search the kitchen cupboards”, “quietly open the stairwell door”, “drag the wardrobe against the front door”, “ask Eilidh if she has seen anyone”, “use a bandage on my arm”, “travel to the pharmacy”, “sleep for four hours”.</div></div></section>
+<div class="foot">DEADLIGHT · CORE 4.0 · Local-first survival simulation · No subscription or API key required</div></main>
 <div class="modal" id="eventModal"><div class="sheet"><div class="eyebrow" id="eventKind">WORLD EVENT</div><div class="badge" id="eventPlace"></div><h2 id="eventTitle"></h2><p id="eventText"></p><div id="eventChoices"></div></div></div>
 <div class="modal" id="toastModal"><div class="sheet"><p id="toastText"></p><button onclick="document.getElementById('toastModal').classList.remove('show')">Close</button></div></div>
 <script>
@@ -506,6 +506,74 @@ function dl33Do(s,raw){
  if(t.length>=3&&!/^(?:what|why|when|where|who|how)\b/.test(t)){tick(1);let focus=obj?` around the ${obj}`:'';S.noise+=force?4:0;say(`You improvise a cautious, reversible attempt at “${String(raw).slice(0,100)}”${focus}. You test the idea without spending a scarce item or assuming it works. The situation may require a more specific tool or method.`);return true;}
  return false;
 }
+
+// DEADLIGHT 4.0: improvised environmental actions. This layer resolves intent + target + world state,
+// rather than requiring a pre-written sentence for every possible plan.
+function dl40Do(raw){
+ const t=dl34Norm(raw), f=dl34Flag(); if(!t)return false;
+ const has=(re)=>re.test(t);
+ const obj=(t.match(/\b(dumpster|skip|wheelie bin|bin|shopping trolley|trolley|shopping cart|cart|chair|sofa|couch|wardrobe|cabinet|table|desk|shelf|shelves|crate|box|pallet|ladder|van|car|bus|fence|gate|window|glass|door|wall|railing|pipe|drainpipe|fire escape|ledge|roof|balcony|stairwell)\b/)||[])[1]||null;
+ const living=has(/\b(?:infected|zombies?|walkers?|horde|survivors?|flatmates?|person|people|man|woman|him|her|them|someone|somebody)\b/);
+ const people=Object.values(S.npcs||{}).filter(n=>n&&n.name&&dl32Present(n));
+ const horde=(S.zombies||0)>0 || (S.world?.horde||0)>0;
+ const objectState=(name)=>{S.flags=S.flags||{};S.flags.dl40Objects=S.flags.dl40Objects||{};S.flags.dl40Objects[S.place]=S.flags.dl40Objects[S.place]||{};let m=S.flags.dl40Objects[S.place];m[name]=m[name]||{};return m[name];};
+ // Explicitly redirect physical-object actions away from combat, even if a later legacy handler recognises "hit".
+ if(has(/\b(?:punch|hit|strike|smack|kick|bash|whack|wallop)\b/) && obj && !living){
+  tick(1);S.energy=Math.max(0,S.energy-1);S.noise=Math.min(100,S.noise+(/\b(?:hard|forcefully|as hard as i can|with all my strength)\b/.test(t)?12:5));
+  if(has(/\b(?:punch|hit|strike|smack|bash|whack|wallop)\b/)){S.condition=S.condition||[];if(!S.condition.includes('Sore knuckles'))S.condition.push('Sore knuckles');}
+  say(`You strike the ${obj}. The impact makes a sharp noise. Nothing living is hit.`);return true;
+ }
+ // Break a window and use it as an improvised escape/entry route.
+ if(has(/\b(?:break|smash|shatter|put my elbow through|batter|kick out)\b/)&&has(/\b(?:window|glass|shopfront|pane)\b/)){
+  let w=objectState('window'); if(w.broken){say('The window is already broken. You inspect the jagged frame before deciding whether it is safe to climb through.');return true;}
+  tick(2);S.noise=Math.min(100,S.noise+24);w.broken=true;w.open=true;w.brokenAt=S.place;
+  if(chance(.28)){S.condition=S.condition||[];if(!S.condition.includes('Minor cuts'))S.condition.push('Minor cuts');S.health=Math.max(1,S.health-2);}
+  say('The glass bursts and falls away. The crash rings down the street and leaves a jagged frame. You have made an opening, but climbing through it will risk cuts and may attract infected.');return true;
+ }
+ if(has(/\b(?:climb|scramble|get|hop|jump|pull myself)\b/)&&has(/\b(?:onto|on top of|up onto|atop)\b/)&&obj){
+  let climbable=/dumpster|skip|bin|trolley|cart|chair|sofa|wardrobe|table|crate|pallet|ladder|car|van|bus|fence|railing|ledge|roof|balcony|fire escape/.test(obj);
+  if(!climbable){say(`The ${obj} does not look like a safe or useful climbing surface.`);return true;}
+  if(/trolley|cart|chair/.test(obj)){tick(2);S.energy=Math.max(0,S.energy-3);say(`You try to climb onto the ${obj}, but it shifts under your weight. You steady it before committing; it is too unstable to provide reliable refuge.`);return true;}
+  tick(3);S.energy=Math.max(0,S.energy-2);let height=/dumpster|skip|van|car|bus|roof|balcony|fire escape|ledge/.test(obj)?'high':'raised';f.dl40Elevation={object:obj,place:S.place,height,day:S.day,time:stamp()};
+  say(`You climb onto the ${obj} and get yourself ${height==='high'?'well above street level':'off the ground'}. From here you have a better view. Infected may struggle to reach you, but this is not guaranteed safety; they can grab, climb or surround the object if its shape allows it.`);return true;
+ }
+ if(has(/\b(?:climb|scramble|drop|jump|hop|slide|get)\b/)&&has(/\b(?:down|off|back down|to the ground)\b/)&&f.dl40Elevation){let e=f.dl40Elevation;tick(2);delete f.dl40Elevation;say(`You carefully climb down from the ${e.object} and return to ground level.`);return true;}
+ // Moving props: support pushes, pulls, drags, tips, overturns and shoves.
+ if(has(/\b(?:push|shove|drag|pull|move|roll|tip|overturn|flip|heave|shift|wheel)\b/)&&obj&&!living){
+  let heavy=/dumpster|skip|car|van|bus|wardrobe|sofa|couch|pallet/.test(obj),light=/chair|crate|box|trolley|cart|bin/.test(obj);
+  let effort=heavy?10:light?3:5; if(S.energy<effort){say(`You try to move the ${obj}, but you are too exhausted to shift it safely. Rest or reduce the load first.`);return true;}
+  tick(heavy?7:3);S.energy=Math.max(0,S.energy-effort);S.noise=Math.min(100,S.noise+(heavy?15:7));let st=objectState(obj);st.moved=true;st.movedAt=S.place;
+  if(has(/\b(?:against|in front of|across|over|block|barricad|doorway|entrance|corridor)\b/)){S.barricade=Math.min(100,(S.barricade||0)+(heavy?24:12));st.blocking=true;say(`You ${has(/\b(?:drag|pull)\b/)?'drag':'push'} the ${obj} into position as an obstruction. It partially blocks the route and adds ${heavy?24:12} points to the barricade. It is noisy work and may not hold against sustained pressure.`);}
+  else if(has(/\b(?:over|onto its side|tip over|overturn|flip)\b/)){st.tipped=true;say(`You heave the ${obj} onto its side. It crashes down with a clatter, changing the available cover and making a lot of noise.`);}
+  else say(`You put your weight into the ${obj} and move it. It shifts across the ground with a scrape; its new position may change what routes or cover are available.`);
+  return true;
+ }
+ // Push an object into a horde as a distraction or moving obstacle.
+ if(has(/\b(?:push|shove|throw|send|roll|wheel|tip|ram)\b/)&&obj&&has(/\b(?:into|toward|towards|at)\b/)&&has(/\b(?:horde|infected|zombies?|walkers?)\b/)){
+  if(!horde){say(`You prepare to send the ${obj} toward the infected, but there is no horde close enough to affect.`);return true;}
+  let heavy=/dumpster|skip|car|van|bus|wardrobe|sofa|pallet/.test(obj);let cost=heavy?9:4;if(S.energy<cost){say(`You cannot get enough leverage to move the ${obj} right now. You are too exhausted.`);return true;}
+  tick(heavy?6:3);S.energy=Math.max(0,S.energy-cost);S.noise=Math.min(100,S.noise+(heavy?18:12));let st=objectState(obj);st.moved=true;st.thrownTowardHorde=true;st.movedAt=S.place;
+  say(`You put your weight into the ${obj} and send it crashing toward the infected. The noise and movement draw their attention for a moment, creating a possible opening. It does not guarantee the horde will stay distracted.`);return true;
+ }
+ // Push a person into a horde is a dangerous interpersonal action, not a generic attack.
+ if(has(/\b(?:push|shove|throw|force|send|knock|drive|ram)\b/)&&living&&has(/\b(?:into|toward|towards|at|against)\b/)&&has(/\b(?:horde|infected|zombies?|walkers?)\b/)){
+  if(!horde){say('There is no horde or infected close enough for that. You cannot push anyone into a threat that is not present.');return true;}
+  let named=people.find(n=>t.includes(String(n.name).toLowerCase()));
+  if(!named){say('You cannot identify a specific person beside you to act on. Name a present survivor, or describe a nearby object you want to push into the infected.');return true;}
+  tick(2);S.energy=Math.max(0,S.energy-5);S.noise=Math.min(100,S.noise+12);let d=dl32SocialData(named);d.respect=Math.max(0,(d.respect||0)-2);d.trust=Math.max(0,(d.trust||0)-2);named.status='hostile';
+  if(chance(.45)){say(`You shove ${named.name} toward the infected. They stumble but fight to get clear, shouting in shock and anger. The horde closes in; this may have lasting consequences.`);}else{S.health=Math.max(1,S.health-8);say(`${named.name} twists away and lashes out as you try to force them toward the infected. You lose your balance in the struggle. The horde is still closing.`);}return true;
+ }
+ // Escape through a previously opened or smashed window, or enter through one.
+ if(has(/\b(?:climb|crawl|scramble|squeeze|vault|jump|slip)\b/)&&has(/\b(?:through|out of|into|inside)\b/)&&has(/\b(?:window|shopfront|opening)\b/)){
+  let w=objectState('window'); if(!w.broken&&!w.open){say('The window is still closed and intact. Open it or break the glass first; forcing your way through would risk serious injury.');return true;}
+  tick(4);S.energy=Math.max(0,S.energy-3);if(w.broken&&chance(.35)){S.condition=S.condition||[];if(!S.condition.includes('Minor cuts'))S.condition.push('Minor cuts');S.health=Math.max(1,S.health-3);}
+  f.dl40WindowCrossed={place:S.place,day:S.day,time:stamp()};S.noise=Math.min(100,S.noise+4);say('You carefully climb through the window opening. The frame catches your clothing, and you land on the other side. You are through, but the opening remains exposed.');return true;
+ }
+ // Generic improvised environmental plan: only resolve if a physical verb and a tangible target are present.
+ if(has(/\b(?:wedge|jam|prop|brace|tie|chain|lash|secure|fasten|anchor)\b/)&&obj){let st=objectState(obj);tick(3);S.energy=Math.max(0,S.energy-2);S.noise=Math.min(100,S.noise+4);st.secured=true;say(`You improvise a way to secure the ${obj} using what is available nearby. It may hold temporarily, but its strength depends on the object and how it is anchored.`);return true;}
+ return false;
+}
+
 act=function(raw){let original=String(raw||'').trim();$('command').value='';if(!original)return;if(S.runEnded){say('This run has ended. Start a new game to play again.');render();return;}
  let clauses=dl33Clauses(original);if(!clauses.length)clauses=[original];let done=0;for(const clause of clauses){if(done>=4||S.runEnded)break;let ok=false;try{ok=dl33Do(clause,clause);}catch(e){console.error('DEADLIGHT intent resolver:',e);}if(!ok){try{if(typeof dl32Social==='function'&&dl32Social(clause))ok=true;else if(typeof dl32Generic==='function'&&dl32Generic(clause))ok=true;else{dl32OldAct(clause);ok=true;}}catch(e){console.error(e);say('You try to carry out that action, but the situation prevents it. No additional time passes.');ok=true;}}
  done++;}
@@ -1018,25 +1086,104 @@ function dl38DrinkClause(clause){
  if(invCount('Bottled water')>0){removeItem('Bottled water');S.thirst=Math.max(0,S.thirst-(ITEM['Bottled water']?.[2]||42));tick(2);say('You drink the bottled water from your pack. Your thirst eases.');return true;}
  say('You have nothing drinkable in your inventory. You need to find a drink before you can reduce your thirst. Nothing is created or consumed.');return true;
 }
+
+// DEADLIGHT 4.0: improvised environmental actions. This layer resolves intent + target + world state,
+// rather than requiring a pre-written sentence for every possible plan.
+function dl40Improvised(raw){
+ const t=dl34Norm(raw), f=dl34Flag(); if(!t)return false;
+ const has=(re)=>re.test(t);
+ const obj=(t.match(/\b(dumpster|skip|wheelie bin|bin|shopping trolley|trolley|shopping cart|cart|chair|sofa|couch|wardrobe|cabinet|table|desk|shelf|shelves|crate|box|pallet|ladder|van|car|bus|fence|gate|window|glass|door|wall|railing|pipe|drainpipe|fire escape|ledge|roof|balcony|stairwell)\b/)||[])[1]||null;
+ const living=has(/\b(?:infected|zombies?|walkers?|horde|survivors?|flatmates?|person|people|man|woman|him|her|them|someone|somebody)\b/);
+ const people=Object.values(S.npcs||{}).filter(n=>n&&n.name&&dl32Present(n));
+ const horde=(S.zombies||0)>0 || (S.world?.horde||0)>0;
+ const objectState=(name)=>{S.flags=S.flags||{};S.flags.dl40Objects=S.flags.dl40Objects||{};S.flags.dl40Objects[S.place]=S.flags.dl40Objects[S.place]||{};let m=S.flags.dl40Objects[S.place];m[name]=m[name]||{};return m[name];};
+ // Explicitly redirect physical-object actions away from combat, even if a later legacy handler recognises "hit".
+ if(has(/\b(?:punch|hit|strike|smack|kick|bash|whack|wallop)\b/) && obj && !living){
+  tick(1);S.energy=Math.max(0,S.energy-1);S.noise=Math.min(100,S.noise+(/\b(?:hard|forcefully|as hard as i can|with all my strength)\b/.test(t)?12:5));
+  if(has(/\b(?:punch|hit|strike|smack|bash|whack|wallop)\b/)){S.condition=S.condition||[];if(!S.condition.includes('Sore knuckles'))S.condition.push('Sore knuckles');}
+  say(`You strike the ${obj}. The impact makes a sharp noise. Nothing living is hit.`);return true;
+ }
+ // Break a window and use it as an improvised escape/entry route.
+ if(has(/\b(?:break|smash|shatter|put my elbow through|batter|kick out)\b/)&&has(/\b(?:window|glass|shopfront|pane)\b/)){
+  let w=objectState('window'); if(w.broken){say('The window is already broken. You inspect the jagged frame before deciding whether it is safe to climb through.');return true;}
+  tick(2);S.noise=Math.min(100,S.noise+24);w.broken=true;w.open=true;w.brokenAt=S.place;
+  if(chance(.28)){S.condition=S.condition||[];if(!S.condition.includes('Minor cuts'))S.condition.push('Minor cuts');S.health=Math.max(1,S.health-2);}
+  say('The glass bursts and falls away. The crash rings down the street and leaves a jagged frame. You have made an opening, but climbing through it will risk cuts and may attract infected.');return true;
+ }
+ if(has(/\b(?:climb|scramble|get|hop|jump|pull myself)\b/)&&has(/\b(?:onto|on top of|up onto|atop)\b/)&&obj){
+  let climbable=/dumpster|skip|bin|trolley|cart|chair|sofa|wardrobe|table|crate|pallet|ladder|car|van|bus|fence|railing|ledge|roof|balcony|fire escape/.test(obj);
+  if(!climbable){say(`The ${obj} does not look like a safe or useful climbing surface.`);return true;}
+  if(/trolley|cart|chair/.test(obj)){tick(2);S.energy=Math.max(0,S.energy-3);say(`You try to climb onto the ${obj}, but it shifts under your weight. You steady it before committing; it is too unstable to provide reliable refuge.`);return true;}
+  tick(3);S.energy=Math.max(0,S.energy-2);let height=/dumpster|skip|van|car|bus|roof|balcony|fire escape|ledge/.test(obj)?'high':'raised';f.dl40Elevation={object:obj,place:S.place,height,day:S.day,time:stamp()};
+  say(`You climb onto the ${obj} and get yourself ${height==='high'?'well above street level':'off the ground'}. From here you have a better view. Infected may struggle to reach you, but this is not guaranteed safety; they can grab, climb or surround the object if its shape allows it.`);return true;
+ }
+ if(has(/\b(?:climb|scramble|drop|jump|hop|slide|get)\b/)&&has(/\b(?:down|off|back down|to the ground)\b/)&&f.dl40Elevation){let e=f.dl40Elevation;tick(2);delete f.dl40Elevation;say(`You carefully climb down from the ${e.object} and return to ground level.`);return true;}
+ // Moving props: support pushes, pulls, drags, tips, overturns and shoves.
+ if(has(/\b(?:push|shove|drag|pull|move|roll|tip|overturn|flip|heave|shift|wheel)\b/)&&obj&&!living){
+  let heavy=/dumpster|skip|car|van|bus|wardrobe|sofa|couch|pallet/.test(obj),light=/chair|crate|box|trolley|cart|bin/.test(obj);
+  let effort=heavy?10:light?3:5; if(S.energy<effort){say(`You try to move the ${obj}, but you are too exhausted to shift it safely. Rest or reduce the load first.`);return true;}
+  tick(heavy?7:3);S.energy=Math.max(0,S.energy-effort);S.noise=Math.min(100,S.noise+(heavy?15:7));let st=objectState(obj);st.moved=true;st.movedAt=S.place;
+  if(has(/\b(?:against|in front of|across|over|block|barricad|doorway|entrance|corridor)\b/)){S.barricade=Math.min(100,(S.barricade||0)+(heavy?24:12));st.blocking=true;say(`You ${has(/\b(?:drag|pull)\b/)?'drag':'push'} the ${obj} into position as an obstruction. It partially blocks the route and adds ${heavy?24:12} points to the barricade. It is noisy work and may not hold against sustained pressure.`);}
+  else if(has(/\b(?:over|onto its side|tip over|overturn|flip)\b/)){st.tipped=true;say(`You heave the ${obj} onto its side. It crashes down with a clatter, changing the available cover and making a lot of noise.`);}
+  else say(`You put your weight into the ${obj} and move it. It shifts across the ground with a scrape; its new position may change what routes or cover are available.`);
+  return true;
+ }
+ // Push an object into a horde as a distraction or moving obstacle.
+ if(has(/\b(?:push|shove|throw|send|roll|wheel|tip|ram)\b/)&&obj&&has(/\b(?:into|toward|towards|at)\b/)&&has(/\b(?:horde|infected|zombies?|walkers?)\b/)){
+  if(!horde){say(`You prepare to send the ${obj} toward the infected, but there is no horde close enough to affect.`);return true;}
+  let heavy=/dumpster|skip|car|van|bus|wardrobe|sofa|pallet/.test(obj);let cost=heavy?9:4;if(S.energy<cost){say(`You cannot get enough leverage to move the ${obj} right now. You are too exhausted.`);return true;}
+  tick(heavy?6:3);S.energy=Math.max(0,S.energy-cost);S.noise=Math.min(100,S.noise+(heavy?18:12));let st=objectState(obj);st.moved=true;st.thrownTowardHorde=true;st.movedAt=S.place;
+  say(`You put your weight into the ${obj} and send it crashing toward the infected. The noise and movement draw their attention for a moment, creating a possible opening. It does not guarantee the horde will stay distracted.`);return true;
+ }
+ // Push a person into a horde is a dangerous interpersonal action, not a generic attack.
+ if(has(/\b(?:push|shove|throw|force|send|knock|drive|ram)\b/)&&living&&has(/\b(?:into|toward|towards|at|against)\b/)&&has(/\b(?:horde|infected|zombies?|walkers?)\b/)){
+  if(!horde){say('There is no horde or infected close enough for that. You cannot push anyone into a threat that is not present.');return true;}
+  let named=people.find(n=>t.includes(String(n.name).toLowerCase()));
+  if(!named){say('You cannot identify a specific person beside you to act on. Name a present survivor, or describe a nearby object you want to push into the infected.');return true;}
+  tick(2);S.energy=Math.max(0,S.energy-5);S.noise=Math.min(100,S.noise+12);let d=dl32SocialData(named);d.respect=Math.max(0,(d.respect||0)-2);d.trust=Math.max(0,(d.trust||0)-2);named.status='hostile';
+  if(chance(.45)){say(`You shove ${named.name} toward the infected. They stumble but fight to get clear, shouting in shock and anger. The horde closes in; this may have lasting consequences.`);}else{S.health=Math.max(1,S.health-8);say(`${named.name} twists away and lashes out as you try to force them toward the infected. You lose your balance in the struggle. The horde is still closing.`);}return true;
+ }
+ // Escape through a previously opened or smashed window, or enter through one.
+ if(has(/\b(?:climb|crawl|scramble|squeeze|vault|jump|slip)\b/)&&has(/\b(?:through|out of|into|inside)\b/)&&has(/\b(?:window|shopfront|opening)\b/)){
+  let w=objectState('window'); if(!w.broken&&!w.open){say('The window is still closed and intact. Open it or break the glass first; forcing your way through would risk serious injury.');return true;}
+  tick(4);S.energy=Math.max(0,S.energy-3);if(w.broken&&chance(.35)){S.condition=S.condition||[];if(!S.condition.includes('Minor cuts'))S.condition.push('Minor cuts');S.health=Math.max(1,S.health-3);}
+  f.dl40WindowCrossed={place:S.place,day:S.day,time:stamp()};S.noise=Math.min(100,S.noise+4);say('You carefully climb through the window opening. The frame catches your clothing, and you land on the other side. You are through, but the opening remains exposed.');return true;
+ }
+ // Generic improvised environmental plan: only resolve if a physical verb and a tangible target are present.
+ if(has(/\b(?:wedge|jam|prop|brace|tie|chain|lash|secure|fasten|anchor)\b/)&&obj){let st=objectState(obj);tick(3);S.energy=Math.max(0,S.energy-2);S.noise=Math.min(100,S.noise+4);st.secured=true;say(`You improvise a way to secure the ${obj} using what is available nearby. It may hold temporarily, but its strength depends on the object and how it is anchored.`);return true;}
+ return false;
+}
+
 act=function(raw){let original=String(raw||'').trim();$('command').value='';if(!original)return;if(S.runEnded){say('This run has ended. Start a new game to play again.');render();return;}
+ // Highest-priority literal object targeting: inspect the player's original words BEFORE any synonym expansion.
+ // This prevents a phrase such as "punch the wall" being rewritten as a generic combat verb.
+ const literal=original.toLowerCase().replace(/[’]/g,"'").replace(/[^a-z0-9'\s-]/g,' ').replace(/\s+/g,' ').trim();
+ const objectStrike=/\b(?:punch|hit|strike|smack|kick|slam|bash|headbutt|wallop|whack)\b/.test(literal);
+ const physicalTarget=literal.match(/\b(wall|walls|door|window|glass|table|desk|cabinet|cupboard|locker|car|vehicle|floor|ground|pavement|tree|post|fence|rock|brick|radiator|bin|skip|lamppost)\b/);
+ const livingTarget=/\b(?:infected|zombie|walker|raider|person|human|survivor|man|woman|him|her|them)\b/.test(literal);
+ if(objectStrike&&physicalTarget&&!livingTarget){
+   const target=physicalTarget[1];tick(1);S.energy=Math.max(0,(S.energy||0)-1);S.noise=(S.noise||0)+(/\b(?:hard|forcefully|as hard as i can|with all my strength)\b/.test(literal)?12:5);
+   if(/\b(?:punch|hit|strike|smack|headbutt|wallop|whack)\b/.test(literal)){S.condition=S.condition||[];if(!S.condition.includes('Sore knuckles'))S.condition.push('Sore knuckles');}
+   say(`You ${/\bkick\b/.test(literal)?'kick':'strike'} the ${target}. The impact hurts your hand and makes a sharp noise. Nothing living is hit.`);render();persist();return;
+ }
  let clauses=dl36Split(original);if(!clauses.length)clauses=[original];clauses=dl36SplitContext(original,clauses);let wholeTarget=dl33FindObject(dl34Norm(original));if(wholeTarget)DL33.lastTarget=wholeTarget;let done=0;
- for(const clause of clauses){if(done>=8||S.runEnded)break;let ok=false;try{if(dl38DrinkClause(clause)){done++;continue;}let n=dl34Norm(clause),structural=/\b(?:door|front door|back door|window|shutter|gate|lock|hatch|cupboard|cabinet|drawer|wardrobe|fridge|freezer|locker|box|crate|toolbox|boot|glovebox|pantry|larder|car|van|bus|body|infected|zombie)\b/.test(n)&&/\b(?:open|close|shut|slam|lock|unlock|secure|latch|bar|force|kick|break|smash|pry|test|jiggle|rattle|knock|tap|peek|inspect|examine|listen|search|scavenge|loot|ransack|rummage|root|look|check|take|grab|pick)\b/.test(n);if(structural)ok=dl34Do(clause);if(!ok)ok=dl36Do(clause);if(!ok)ok=dl35Do(clause);if(!ok)ok=dl34Do(clause);}catch(e){console.error('DEADLIGHT 3.7 resolver',e);}
+ for(const clause of clauses){if(done>=8||S.runEnded)break;let ok=false;try{if(dl38DrinkClause(clause)){done++;continue;}if(dl40Improvised(clause)){done++;continue;}let n=dl34Norm(clause),structural=/\b(?:door|front door|back door|window|shutter|gate|lock|hatch|cupboard|cabinet|drawer|wardrobe|fridge|freezer|locker|box|crate|toolbox|boot|glovebox|pantry|larder|car|van|bus|body|infected|zombie)\b/.test(n)&&/\b(?:open|close|shut|slam|lock|unlock|secure|latch|bar|force|kick|break|smash|pry|test|jiggle|rattle|knock|tap|peek|inspect|examine|listen|search|scavenge|loot|ransack|rummage|root|look|check|take|grab|pick)\b/.test(n);if(structural)ok=dl34Do(clause);if(!ok)ok=dl36Do(clause);if(!ok)ok=dl35Do(clause);if(!ok)ok=dl34Do(clause);}catch(e){console.error('DEADLIGHT 4.0 resolver',e);}
  if(!ok){try{ok=dl33Do(clause,clause);}catch(e){console.error('DEADLIGHT 3.3 fallback',e);}}
- if(!ok){try{if(dl32Social(clause)||dl32Generic(clause))ok=true;else{dl32OldAct(clause);ok=true;}}catch(e){console.error('DEADLIGHT legacy fallback',e);say('You try to carry out that action, but the situation prevents it. No additional time has passed.');ok=true;}}
+ if(!ok){const safeTarget=/\b(?:wall|window|glass|dumpster|skip|bin|trolley|cart|chair|sofa|wardrobe|cabinet|table|desk|shelf|crate|box|pallet|ladder|van|car|bus|fence|gate|railing|roof|balcony|door|doorway)\b/.test(dl34Norm(clause));const physicalVerb=/\b(?:push|shove|drag|pull|move|climb|scramble|jump|break|smash|shatter|punch|hit|strike|kick|tip|overturn|flip|wedge|jam|prop|brace|throw|vault|crawl|squeeze)\b/.test(dl34Norm(clause));if(safeTarget&&physicalVerb){say(`You consider trying to ${clause.toLowerCase()}, but the current surroundings or available mechanics do not support that exact manoeuvre yet. No unrelated action is performed and no items are created.`);}else{try{if(dl32Social(clause)||dl32Generic(clause))ok=true;else{dl32OldAct(clause);ok=true;}}catch(e){console.error('DEADLIGHT legacy fallback',e);say('You try to carry out that action, but the situation prevents it. No additional time has passed.');ok=true;}}}
  done++;}
  if(clauses.length>8)say('You have a long sequence planned. You complete the first eight actions, then pause to reassess before doing anything else.');render();persist();};
 // Bump the save schema without changing the existing key, retaining every current save field.
-S.version=20;
+S.version=21;
 const dl34Help=document.querySelector('#tab-play .notice');if(dl34Help)dl34Help.textContent='Use everyday language, slang, typos, unusual ideas and action chains. DEADLIGHT combines large verb, object and phrasing vocabularies with local context and references like it/that. Core actions have real survival effects; unsupported actions are not falsely reported as successful.';
 const dl34Settings=document.querySelector('#tab-settings .notice');
 if(dl34Settings){const p=document.querySelector('#tab-settings .panel .notice');if(p)p.textContent='Difficulty: Realistic and unforgiving · Setting: Aberdeen, Scotland · Single-player · Local save · Expanded local action grammar · Procedural narrative director';}
-const dl34About=document.querySelector('#tab-settings button[onclick*="About"]');if(dl34About)dl34About.setAttribute('onclick',"toast('DEADLIGHT Core 3.8 · Local-first survival RPG · Save stored in this browser.')");
-const dl34Footer=document.querySelector('.foot');if(dl34Footer)dl34Footer.textContent='DEADLIGHT · CORE 3.8 · Local-first survival simulation · No subscription or API key required';
-const dl34Badge=document.querySelector('.brand .pill');if(dl34Badge)dl34Badge.textContent='CORE 3.8';
+const dl34About=document.querySelector('#tab-settings button[onclick*="About"]');if(dl34About)dl34About.setAttribute('onclick',"toast('DEADLIGHT Core 4.0 · Local-first survival RPG · Save stored in this browser.')");
+const dl34Footer=document.querySelector('.foot');if(dl34Footer)dl34Footer.textContent='DEADLIGHT · CORE 4.0 · Local-first survival simulation · No subscription or API key required';
+const dl34Badge=document.querySelector('.brand .pill');if(dl34Badge)dl34Badge.textContent='CORE 4.0';
 
 // The cache key changes on each release so iPhone Home Screen installs fetch this build.
-S.version=20;
-const dl33Persist=persist;persist=function(){S.version=20;try{localStorage.setItem('deadlight-save',JSON.stringify(S));}catch(e){}};
+S.version=21;
+const dl33Persist=persist;persist=function(){S.version=21;try{localStorage.setItem('deadlight-save',JSON.stringify(S));}catch(e){}};
 let dl33Help=document.querySelector('#tab-play .notice');if(dl33Help)dl33Help.textContent='Write naturally, use slang, make typos, name objects, add details or chain up to eight actions together. The local action resolver combines verbs, targets, objects, context and remembered references. Not every imaginable action has a game mechanic yet, but unsupported actions will not be reported as successful.';
 
 render();persist();
