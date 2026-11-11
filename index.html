@@ -55,7 +55,7 @@ button.danger{background:#472b35;border-color:#8e5165;color:#ffe7eb}
 </style>
 </head>
 <body><main class="app">
-<header class="top"><div class="brand">DEADLIGHT <span class="pill">CORE 3.6</span></div><div class="day" id="clock">DAY 1 · 07:00</div></header>
+<header class="top"><div class="brand">DEADLIGHT <span class="pill">CORE 3.8</span></div><div class="day" id="clock">DAY 1 · 07:00</div></header>
 <section class="hero"><div class="scene"><div class="eyebrow" id="weather">OVERCAST · LIGHT RAIN</div><h1 id="placeTitle">Spring Gardens</h1><p id="placeDesc"></p></div><div class="stats" id="stats"></div></section>
 <nav class="tabs"><button class="active" data-tab="play">Explore</button><button data-tab="inventory">Inventory</button><button data-tab="map">Map</button><button data-tab="journal">Journal</button><button data-tab="people">People</button><button data-tab="settings">Settings</button></nav>
 <section id="tab-play"><div class="grid"><div class="panel"><h2>Situation & events</h2><div class="story" id="story" aria-live="polite"></div></div><div class="panel"><h2>Quick actions</h2><div class="actions">
@@ -66,8 +66,8 @@ button.danger{background:#472b35;border-color:#8e5165;color:#ffe7eb}
 <section id="tab-map" class="hidden"><div class="panel"><h2>Known surroundings · Aberdeen</h2><div id="map" class="map"></div><p class="notice">Travel costs time and energy. Routes may be blocked, exposed or dangerous. Visited places retain their loot state.</p></div><div class="panel"><h2>Local conditions</h2><div id="conditions"></div></div></section>
 <section id="tab-journal" class="hidden"><div class="panel"><h2>Survivor journal</h2><div id="journal"></div></div><div class="panel"><h2>Save management</h2><button onclick="exportSave()">Export save backup</button> <button onclick="document.getElementById('loadFile').click()">Import save</button> <input id="loadFile" type="file" accept="application/json" class="hidden"><button onclick="save();toast('Progress saved on this device.')">Save now</button><button class="danger" onclick="resetGame()">Start a new game</button><p class="notice">Autosaves after actions. Export a backup before clearing browser data or changing devices.</p></div></section>
 <section id="tab-people" class="hidden"><div class="panel"><h2>Known survivors</h2><div id="people"></div></div><div class="panel"><h2>Active leads</h2><div id="leads"></div></div></section>
-<section id="tab-settings" class="hidden"><div class="panel"><h2>Simulation settings</h2><p class="notice">Difficulty: Realistic and unforgiving · Setting: Aberdeen, Scotland · Single-player · Local save · Procedural narrative director</p><div class="line"><span>Autosave</span><b class="good">ON</b></div><div class="line"><span>Offline play</span><b class="good">SUPPORTED</b></div><div class="line"><span>Live AI connection</span><b>Not connected</b></div><p class="notice">This is a self-contained procedural game, not a live ChatGPT connection. It does not need an API key, paid AI calls or a server. It generates varied scenarios from local world state and authored narrative material.</p><button onclick="toggleHints()">Toggle command hints</button><button onclick="toast('DEADLIGHT Core 3.6 · Local-first survival RPG · Save stored in this browser.')">About this build</button></div><div class="panel"><h2>Command examples</h2><div class="notice">“Search the kitchen cupboards”, “quietly open the stairwell door”, “drag the wardrobe against the front door”, “ask Eilidh if she has seen anyone”, “use a bandage on my arm”, “travel to the pharmacy”, “sleep for four hours”.</div></div></section>
-<div class="foot">DEADLIGHT · CORE 3.6 · Local-first survival simulation · No subscription or API key required</div></main>
+<section id="tab-settings" class="hidden"><div class="panel"><h2>Simulation settings</h2><p class="notice">Difficulty: Realistic and unforgiving · Setting: Aberdeen, Scotland · Single-player · Local save · Procedural narrative director</p><div class="line"><span>Autosave</span><b class="good">ON</b></div><div class="line"><span>Offline play</span><b class="good">SUPPORTED</b></div><div class="line"><span>Live AI connection</span><b>Not connected</b></div><p class="notice">This is a self-contained procedural game, not a live ChatGPT connection. It does not need an API key, paid AI calls or a server. It generates varied scenarios from local world state and authored narrative material.</p><button onclick="toggleHints()">Toggle command hints</button><button onclick="toast('DEADLIGHT Core 3.8 · Local-first survival RPG · Save stored in this browser.')">About this build</button></div><div class="panel"><h2>Command examples</h2><div class="notice">“Search the kitchen cupboards”, “quietly open the stairwell door”, “drag the wardrobe against the front door”, “ask Eilidh if she has seen anyone”, “use a bandage on my arm”, “travel to the pharmacy”, “sleep for four hours”.</div></div></section>
+<div class="foot">DEADLIGHT · CORE 3.8 · Local-first survival simulation · No subscription or API key required</div></main>
 <div class="modal" id="eventModal"><div class="sheet"><div class="eyebrow" id="eventKind">WORLD EVENT</div><div class="badge" id="eventPlace"></div><h2 id="eventTitle"></h2><p id="eventText"></p><div id="eventChoices"></div></div></div>
 <div class="modal" id="toastModal"><div class="sheet"><p id="toastText"></p><button onclick="document.getElementById('toastModal').classList.remove('show')">Close</button></div></div>
 <script>
@@ -88,7 +88,7 @@ const LOC=[
 ['Industrial estate','Warehouses','Large units, loading bays and plenty of hiding places.',38,['Scrap metal','Wood plank','Duct tape','Rope','Hammer','Fuel can']]
 ];
 const ITEM={
-'Water bottle':[1,'drink',42],'Tinned beans':[.45,'food',34],'Canned soup':[.5,'food',38],'Cereal bar':[.08,'food',18],
+'Water bottle':[1,'drink',42],'Soda':[.35,'drink',24],'Cola':[.35,'drink',24],'Fruit juice':[.3,'drink',28],'Energy drink':[.25,'drink',30],'Milk carton':[.5,'drink',20],'Tinned beans':[.45,'food',34],'Canned soup':[.5,'food',38],'Cereal bar':[.08,'food',18],
 'Crowbar':[2.5,'weapon',0],'Kitchen knife':[.4,'weapon',0],'Hammer':[1.1,'weapon',0],'Bandage':[.1,'medical',0],
 'Painkillers':[.1,'medical',0],'Disinfectant':[.3,'medical',0],'Antibiotics':[.15,'medical',0],'First aid kit':[.8,'medical',0],
 'Duct tape':[.3,'material',0],'Batteries':[.2,'material',0],'Scrap metal':[1.2,'material',0],'Wood plank':[1.5,'material',0],
@@ -665,7 +665,7 @@ function dl34Do(raw){let t=dl34Norm(raw);if(!t)return false;const obj=dl33FindOb
  // Barricading and repositioning furniture have tangible shelter effects.
  if(/\b(?:barricade|board up|block off|bar the|brace|shore up|fortify|reinforce|seal off|jam shut|wedge shut)\b/.test(t)||(/\b(?:drag|push|move|shift|slide|heave|haul|shove|position)\b/.test(t)&&/\b(?:wardrobe|sofa|couch|table|cabinet|bookcase|dresser|furniture|crate|pallet|door|window|entrance)\b/.test(t))){barricade(t);let f=dl34Flag();f.dl34BarricadeTarget=obj||'entrance';return true;}
  // Combat and offensive actions. The combat model decides whether the blow lands.
- if(/\b(?:fight|attack|kill|hit|strike|stab|slash|swing at|punch|smack|clobber|beat up|take down|go for|charge at|bash .*head|crack .*skull|smash .*face|rip .*apart|stomp|kick .*infected|defend myself|defend us|protect myself|swing my|use my .* on)\b/.test(t)){combat();skill('melee',.8);return true;}
+ if(/\b(?:fight|attack|kill|hit|strike|stab|slash|swing at|punch|smack|clobber|beat up|take down|go for|charge at|bash .*head|crack .*skull|smash .*face|rip .*apart|stomp|kick .*infected|defend myself|defend us|protect myself|swing my|use my .* on)\b/.test(t)&&(!/\b(?:wall|walls|door|window|glass|table|desk|cabinet|cupboard|locker|car|vehicle|floor|ground|pavement|tree|post|fence|rock|brick)\b/.test(t)||/\b(?:infected|zombie|walker|raider|person|human|survivor)\b/.test(t))){if((S.zombies||0)<=0){say('There is no infected or hostile person close enough to attack. You lower your hands and keep your attention on the surroundings.');return true;}combat();skill('melee',.8);return true;}
  if(/\b(?:sneak|creep|tiptoe|ghost past|slip past|get past|sneak past|avoid|evade|bypass|get around)\b/.test(t)&&/\b(?:infected|zombie|horde|them|threat|person|guard|raider|without being seen|without alerting)\b/.test(t)){tick(6);S.energy=Math.max(0,S.energy-4);S.noise=Math.max(0,S.noise-10);skill('stealth',1);let success=chance(Math.max(.35,.8-(S.noise/250)-(S.world.heat/300)));if(success){if(S.zombies>0)S.zombies=Math.max(0,S.zombies-1);say('You wait for the infected to turn away, then move from cover to cover. Their attention stays elsewhere and you get past without a direct fight.');}else{say('You try to slip past, but loose debris shifts beneath your foot. Something turns towards the sound.');if(S.zombies>0)encounter();}return true;}
  // Play dead / freeze are high-risk survival tactics, not guaranteed invisibility.
  if(/\b(?:play dead|play possum|pretend to be dead|act dead|freeze|hold breath|stay still|stay motionless|lie motionless|drop flat)\b/.test(t)){tick(/hold breath|freeze|stay still|motionless/.test(t)?2:4);S.noise=Math.max(0,S.noise-7);S.flags.hidden=true;skill('stealth',.6);say('You lower yourself and stay utterly still, controlling your breathing. It is a gamble: an infected may lose interest, or it may come close enough to touch you.');if(S.zombies>0&&chance(.32)){S.zombies=Math.max(0,S.zombies-1);say('After a long moment, the nearest infected turns away and drifts out of reach.');}else if(S.zombies>0&&chance(.16)){S.health=Math.max(1,S.health-8);S.condition.push('Bruising');say('An infected brushes against you. You jerk away before it can get a proper grip.');}return true;}
@@ -963,6 +963,23 @@ function dl36SplitContext(original,clauses){
 // A handful of genuinely stateful actions missing from earlier passes.
 function dl36Do(raw){
  let t=dl34Norm(raw),f=dl34Flag(),obj=dl33FindObject(t)||DL33.lastTarget||null;if(!t)return false;
+ // Object-directed strikes must never silently become attacks on an infected.
+ if(/\b(?:punch|hit|strike|smack|kick|slam|bash|headbutt)\b/.test(t)&&/\b(?:wall|walls|door|window|glass|table|desk|cabinet|cupboard|locker|car|vehicle|floor|ground|pavement|tree|post|fence|rock|brick)\b/.test(t)&&! /\b(?:infected|zombie|walker|raider|person|human|survivor)\b/.test(t)){
+  let target=(t.match(/\b(wall|walls|door|window|glass|table|desk|cabinet|cupboard|locker|car|vehicle|floor|ground|pavement|tree|post|fence|rock|brick)\b/)||[])[0]||'object';
+  tick(1);S.energy=Math.max(0,(S.energy||0)-1);S.noise=(S.noise||0)+(/\b(?:hard|forcefully|as hard as i can|with all my strength)\b/.test(t)?12:5);
+  if(/\b(?:wall|walls|door|window|glass|table|desk|cabinet|cupboard|locker|car|vehicle|tree|post|fence|rock|brick)\b/.test(target)&&/\b(?:punch|hit|strike|smack|headbutt)\b/.test(t)){S.condition=S.condition||[];if(!S.condition.includes('Sore knuckles'))S.condition.push('Sore knuckles');}
+  say(`You ${/\bkick\b/.test(t)?'kick':'strike'} the ${target}. The impact hurts your hand and makes a sharp noise. Nothing living is hit.`);return true;
+ }
+ // Broad social check-ins: don't require the player to know a survivor's proper name.
+ if(/\b(?:check on|check up on|see how|make sure)\b/.test(t)&&/\b(?:flatmates?|flat ?mates|roommates?|housemates?|friends?|survivors?|people|everyone|the others|the group)\b/.test(t)){
+  let known=Object.values(S.npcs||{}).filter(n=>n&&n.name);
+  let present=known.filter(n=>dl32Present(n));
+  tick(2);
+  if(present.length){let names=present.map(n=>n.name);for(const n of present){let d=dl32SocialData(n);d.bond=Math.min(10,(d.bond||0)+.25);d.comfort=Math.min(10,(d.comfort||0)+.35);}say(`You check in with the survivors nearby: ${names.join(', ')}. You ask how they are holding up and look for signs that anyone needs help.`);}
+  else if(known.length){say(`You look for your flatmates and check the places where you last saw the survivors. Nobody is here with you right now. Known survivors: ${known.map(n=>n.name).join(', ')}. You would need to find them before checking on them in person.`);}
+  else{say('You call softly for your flatmates and check the nearby rooms. There is no sign of them, and you have not established contact with any survivors yet. You make a mental note to look for them.');}
+  note('Checked the immediate area for flatmates and other survivors.');return true;
+ }
  if(/\b(?:hold|keep|brace|lean against)\b/.test(t)&&/\b(?:door|doorway|entrance|gate|hatch)\b/.test(t)&&! /\b(?:hold my breath|hold a conversation|hold a weapon|hold the line|hold on)\b/.test(t)){let target=obj||'door';tick(2);S.energy=Math.max(0,(S.energy||0)-1.5);f.dl36HeldDoor=target;f.dl36DoorHeldAt=S.place;say(`You brace yourself against the ${target} and put your weight into it. It is held for now, but you cannot maintain that position indefinitely.`);return true;}
  if(/\b(?:let go|release|stop holding|step away from)\b/.test(t)&&/\b(?:door|doorway|entrance|gate|hatch|it)\b/.test(t)){let target=f.dl36HeldDoor||obj||'door';delete f.dl36HeldDoor;delete f.dl36DoorHeldAt;tick(1);say(`You ease away from the ${target}. You are no longer physically holding it shut.`);return true;}
  if(/\b(?:remove|clear|dismantle|take down|pull apart|move)\b/.test(t)&&/\b(?:barricade|barricades|barricading|boards|planks|furniture blocking|obstruction)\b/.test(t)){let before=S.barricade||0;if(before<=0){say('There is no recorded barricade here to dismantle.');return true;}let amount=Math.min(before,Number((t.match(/\b(\d+)\s*(?:points|strength|percent|%)\b/)||[])[1]||35));S.barricade=Math.max(0,before-amount);tick(5);f.dl36BarricadeRemoved=S.place;say(`You pull away part of the barricade. Its strength drops from ${before} to ${S.barricade}/100. The work makes a scrape of noise.`);return true;}
@@ -984,25 +1001,42 @@ function dl36Do(raw){
 }
 
 const dl35BaseAct=act;
+function dl38DrinkClause(clause){
+ const t=dl34Norm(clause);
+ const hasDrinkVerb=/\b(?:drink|sip|swig|gulp|neck|chug|quaff|hydrate|down)\b/.test(t);
+ if(!hasDrinkVerb)return false;
+ const aliases=[['energy drink','Energy drink'],['fruit juice','Fruit juice'],['orange juice','Fruit juice'],['apple juice','Fruit juice'],['milk','Milk carton'],['milk carton','Milk carton'],['soda','Soda'],['pop','Soda'],['cola','Cola'],['coke','Cola'],['soft drink','Soda'],['fizzy drink','Soda'],['water bottle','Water bottle'],['bottled water','Bottled water'],['water','Water bottle']];
+ let requested=null;
+ for(const [phrase,name] of aliases){if(new RegExp('\\b'+phrase.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b').test(t)){requested=name;break;}}
+ // If the player named a particular beverage, never substitute another drink or create one.
+ if(requested){
+  if(!invCount(requested)){say(`You reach for ${requested==='Soda'?'a soda':requested==='Cola'?'a cola':requested==='Fruit juice'?'some fruit juice':requested==='Energy drink'?'an energy drink':requested==='Milk carton'?'a carton of milk':requested==='Water bottle'?'a bottle of water':'that drink'}, but you are not carrying any. Nothing is consumed and your thirst does not change.`);return true;}
+  removeItem(requested);const restore=ITEM[requested]?.[2]||25;S.thirst=Math.max(0,S.thirst-restore);tick(2);say(`You drink the ${requested.toLowerCase()} you were carrying. Your thirst eases a little. You have ${invCount(requested)} left.`);return true;
+ }
+ // Unspecified drinking may use carried water only; it must never conjure a beverage.
+ if(invCount('Water bottle')>0){drink();return true;}
+ if(invCount('Bottled water')>0){removeItem('Bottled water');S.thirst=Math.max(0,S.thirst-(ITEM['Bottled water']?.[2]||42));tick(2);say('You drink the bottled water from your pack. Your thirst eases.');return true;}
+ say('You have nothing drinkable in your inventory. You need to find a drink before you can reduce your thirst. Nothing is created or consumed.');return true;
+}
 act=function(raw){let original=String(raw||'').trim();$('command').value='';if(!original)return;if(S.runEnded){say('This run has ended. Start a new game to play again.');render();return;}
  let clauses=dl36Split(original);if(!clauses.length)clauses=[original];clauses=dl36SplitContext(original,clauses);let wholeTarget=dl33FindObject(dl34Norm(original));if(wholeTarget)DL33.lastTarget=wholeTarget;let done=0;
- for(const clause of clauses){if(done>=8||S.runEnded)break;let ok=false;try{let n=dl34Norm(clause),structural=/\b(?:door|front door|back door|window|shutter|gate|lock|hatch|cupboard|cabinet|drawer|wardrobe|fridge|freezer|locker|box|crate|toolbox|boot|glovebox|pantry|larder|car|van|bus|body|infected|zombie)\b/.test(n)&&/\b(?:open|close|shut|slam|lock|unlock|secure|latch|bar|force|kick|break|smash|pry|test|jiggle|rattle|knock|tap|peek|inspect|examine|listen|search|scavenge|loot|ransack|rummage|root|look|check|take|grab|pick)\b/.test(n);if(structural)ok=dl34Do(clause);if(!ok)ok=dl36Do(clause);if(!ok)ok=dl35Do(clause);if(!ok)ok=dl34Do(clause);}catch(e){console.error('DEADLIGHT 3.6 resolver',e);}
+ for(const clause of clauses){if(done>=8||S.runEnded)break;let ok=false;try{if(dl38DrinkClause(clause)){done++;continue;}let n=dl34Norm(clause),structural=/\b(?:door|front door|back door|window|shutter|gate|lock|hatch|cupboard|cabinet|drawer|wardrobe|fridge|freezer|locker|box|crate|toolbox|boot|glovebox|pantry|larder|car|van|bus|body|infected|zombie)\b/.test(n)&&/\b(?:open|close|shut|slam|lock|unlock|secure|latch|bar|force|kick|break|smash|pry|test|jiggle|rattle|knock|tap|peek|inspect|examine|listen|search|scavenge|loot|ransack|rummage|root|look|check|take|grab|pick)\b/.test(n);if(structural)ok=dl34Do(clause);if(!ok)ok=dl36Do(clause);if(!ok)ok=dl35Do(clause);if(!ok)ok=dl34Do(clause);}catch(e){console.error('DEADLIGHT 3.7 resolver',e);}
  if(!ok){try{ok=dl33Do(clause,clause);}catch(e){console.error('DEADLIGHT 3.3 fallback',e);}}
  if(!ok){try{if(dl32Social(clause)||dl32Generic(clause))ok=true;else{dl32OldAct(clause);ok=true;}}catch(e){console.error('DEADLIGHT legacy fallback',e);say('You try to carry out that action, but the situation prevents it. No additional time has passed.');ok=true;}}
  done++;}
  if(clauses.length>8)say('You have a long sequence planned. You complete the first eight actions, then pause to reassess before doing anything else.');render();persist();};
 // Bump the save schema without changing the existing key, retaining every current save field.
-S.version=19;
+S.version=20;
 const dl34Help=document.querySelector('#tab-play .notice');if(dl34Help)dl34Help.textContent='Use everyday language, slang, typos, unusual ideas and action chains. DEADLIGHT combines large verb, object and phrasing vocabularies with local context and references like it/that. Core actions have real survival effects; unsupported actions are not falsely reported as successful.';
 const dl34Settings=document.querySelector('#tab-settings .notice');
 if(dl34Settings){const p=document.querySelector('#tab-settings .panel .notice');if(p)p.textContent='Difficulty: Realistic and unforgiving · Setting: Aberdeen, Scotland · Single-player · Local save · Expanded local action grammar · Procedural narrative director';}
-const dl34About=document.querySelector('#tab-settings button[onclick*="About"]');if(dl34About)dl34About.setAttribute('onclick',"toast('DEADLIGHT Core 3.6 · Local-first survival RPG · Save stored in this browser.')");
-const dl34Footer=document.querySelector('.foot');if(dl34Footer)dl34Footer.textContent='DEADLIGHT · CORE 3.6 · Local-first survival simulation · No subscription or API key required';
-const dl34Badge=document.querySelector('.brand .pill');if(dl34Badge)dl34Badge.textContent='CORE 3.6';
+const dl34About=document.querySelector('#tab-settings button[onclick*="About"]');if(dl34About)dl34About.setAttribute('onclick',"toast('DEADLIGHT Core 3.8 · Local-first survival RPG · Save stored in this browser.')");
+const dl34Footer=document.querySelector('.foot');if(dl34Footer)dl34Footer.textContent='DEADLIGHT · CORE 3.8 · Local-first survival simulation · No subscription or API key required';
+const dl34Badge=document.querySelector('.brand .pill');if(dl34Badge)dl34Badge.textContent='CORE 3.8';
 
 // The cache key changes on each release so iPhone Home Screen installs fetch this build.
-S.version=19;
-const dl33Persist=persist;persist=function(){S.version=19;try{localStorage.setItem('deadlight-save',JSON.stringify(S));}catch(e){}};
+S.version=20;
+const dl33Persist=persist;persist=function(){S.version=20;try{localStorage.setItem('deadlight-save',JSON.stringify(S));}catch(e){}};
 let dl33Help=document.querySelector('#tab-play .notice');if(dl33Help)dl33Help.textContent='Write naturally, use slang, make typos, name objects, add details or chain up to eight actions together. The local action resolver combines verbs, targets, objects, context and remembered references. Not every imaginable action has a game mechanic yet, but unsupported actions will not be reported as successful.';
 
 render();persist();

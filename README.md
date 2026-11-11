@@ -1,8 +1,8 @@
-# DEADLIGHT Core 3.6
+# DEADLIGHT Core 3.8
 
 A mobile-first, local-first zombie survival RPG set in Aberdeen. No paid API, API key or external AI service is used.
 
-## 3.6 behemoth action-language expansion
+## 3.8 behemoth action-language expansion
 
 This release adds a very large bank of colloquial phrases and additional regional variants, UK/US wording, verb inflections, typo corrections, slang, target aliases and reference carry-over. A compositional grammar combines those vocabularies with action targets and modifiers, creating a large number of combinations without storing 100,000 brittle fixed sentences.
 
@@ -21,4 +21,10 @@ Upload `index.html`, `sw.js`, `manifest.webmanifest` and `README.md` directly in
 - `manifest.webmanifest` — Home Screen app metadata
 - `README.md` — release notes
 
-Additional 3.6 coverage in the final pass includes more slang and regional phrasings for scavenging, food/drink, movement, stealth, combat, container operations, inventory, wound care, shelter work, vehicles, radios, survivor requests, waiting/resting, journaling and roleplay. Follow-up references now carry plural items such as “them” into later clauses. New stateful actions include phone photographs, checking for active bleeding, shoving a nearby infected back, crawling through an already-open window, and listening through barriers. Pronouns without a remembered target now ask for clarification instead of being sent to a generic fallback.
+Additional 3.8 coverage in the final pass includes more slang and regional phrasings for scavenging, food/drink, movement, stealth, combat, container operations, inventory, wound care, shelter work, vehicles, radios, survivor requests, waiting/resting, journaling and roleplay. Follow-up references now carry plural items such as “them” into later clauses. New stateful actions include phone photographs, checking for active bleeding, shoving a nearby infected back, crawling through an already-open window, and listening through barriers. Pronouns without a remembered target now ask for clarification instead of being sent to a generic fallback.
+
+
+3.8 fixes target-aware combat so striking a wall or object cannot hit an infected, and adds a general check-in action for flatmates/housemates/friends/survivors without requiring a named NPC. Save migration retains existing progress.
+
+
+3.8 fix: beverage actions now require the exact named drink to exist in inventory. No drink is created, no substitute is consumed, and thirst is unchanged when the requested drink is absent.
