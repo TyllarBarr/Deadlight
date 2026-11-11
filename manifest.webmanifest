@@ -4,7 +4,7 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0c120e",
-  "theme_color": "#101713",
-  "description": "A deeper local-first zombie survival simulation set in Aberdeen, with a reactive world and procedural encounters."
+  "background_color": "#080f19",
+  "theme_color": "#101d2b",
+  "description": "A local-first zombie survival simulation set in Aberdeen, with expanded free-form actions and procedural encounters."
 }
