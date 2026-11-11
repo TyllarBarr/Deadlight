@@ -6,5 +6,5 @@
   "display": "standalone",
   "background_color": "#0c120e",
   "theme_color": "#101713",
-  "description": "A local-first zombie survival RPG set in Aberdeen."
+  "description": "A deeper local-first zombie survival simulation set in Aberdeen, with a reactive world and procedural encounters."
 }
