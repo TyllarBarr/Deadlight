@@ -1,14 +1,18 @@
-# DEADLIGHT Core 3.8
+# DEADLIGHT Core 5.0
 
 A mobile-first, local-first zombie survival RPG set in Aberdeen. No paid API, API key or external AI service is used.
 
-## 3.8 behemoth action-language expansion
+## 5.0 — playthrough readiness update
 
-This release adds a very large bank of colloquial phrases and additional regional variants, UK/US wording, verb inflections, typo corrections, slang, target aliases and reference carry-over. A compositional grammar combines those vocabularies with action targets and modifiers, creating a large number of combinations without storing 100,000 brittle fixed sentences.
+- Routes improvised environmental actions through the environmental resolver before the legacy action handlers. This is important for object-targeted actions such as striking a wall, moving furniture, climbing onto objects and breaking windows.
+- Keeps the fictional starting location **Marlowe Court**; no reference to the player's real street is intended.
+- Updates the visible build label and service-worker cache key so browsers request the new release rather than reusing the previous cached shell.
+- Clarifies the command prompt: use one or two actions at a time, and the local resolver checks state rather than promising unrestricted natural-language understanding.
+- Preserves the existing local save format and game data. Existing saves are not deliberately reset by this update.
 
-It improves action chaining to up to eight clauses, carries referenced objects/items, including plural references like “put them in the torch”, through phrases such as “open the door, then close it”, and adds persistent actions for holding/releasing a door, dismantling a barricade, checking/disarming traps, lowering readied weapons, planning, calming breathing and listening closely through a barrier.
+## Important limitations
 
-The existing simulation mechanics remain responsible for travel, searching, doors and containers, combat, stealth, inventory, survival needs, medical care, crafting, barricades, vehicles, radio, shelter projects and survivor relationships. Unsupported actions are not falsely reported as successful. This is still a local rule-based system, not a live language model; it cannot understand every possible sentence or perform actions absent from the simulation.
+DEADLIGHT is a local procedural/rule-based simulation, not a live language model. It does not understand every possible sentence. The action engine is still a mixture of specialised handlers and a legacy fallback, so unfamiliar commands may need rephrasing. No browser-based end-to-end playtest was available during this build; the JavaScript syntax and ZIP integrity were checked.
 
 ## Install / update
 
@@ -20,17 +24,3 @@ Upload `index.html`, `sw.js`, `manifest.webmanifest` and `README.md` directly in
 - `sw.js` — offline cache / update strategy
 - `manifest.webmanifest` — Home Screen app metadata
 - `README.md` — release notes
-
-Additional 3.8 coverage in the final pass includes more slang and regional phrasings for scavenging, food/drink, movement, stealth, combat, container operations, inventory, wound care, shelter work, vehicles, radios, survivor requests, waiting/resting, journaling and roleplay. Follow-up references now carry plural items such as “them” into later clauses. New stateful actions include phone photographs, checking for active bleeding, shoving a nearby infected back, crawling through an already-open window, and listening through barriers. Pronouns without a remembered target now ask for clarification instead of being sent to a generic fallback.
-
-
-3.8 fixes target-aware combat so striking a wall or object cannot hit an infected, and adds a general check-in action for flatmates/housemates/friends/survivors without requiring a named NPC. Save migration retains existing progress.
-
-
-3.8 fix: beverage actions now require the exact named drink to exist in inventory. No drink is created, no substitute is consumed, and thirst is unchanged when the requested drink is absent.
-
-
-DEADLIGHT Core 4.0: prioritises literal object-targeted strikes before synonym expansion, preventing attacks on non-living objects from entering the infected combat handler.
-
-
-Core 4.0 adds improvised environmental interactions: moving and tipping props, climbing onto elevated objects, breaking and crossing windows, and state-checked physical actions.
